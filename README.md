@@ -66,7 +66,7 @@ ln -s /usr/share/munin/plugins/nginx_request_time /etc/munin/plugins/nginx_reque
 ln -s /usr/share/munin/plugins/nginx_request_time /etc/munin/plugins/nginx_request_time_max
 ```
 
-Restart munin-node
+Restart munin-node.
 ```
 service munin-node restart
 ```
