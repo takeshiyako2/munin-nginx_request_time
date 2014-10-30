@@ -20,6 +20,7 @@ Modes
 Usage
 ----------------
 
+Change nginx log format.
 Nginx must be configured to get $request_time.  
 nginx_request_time expects LTSV log format.  
 
@@ -40,6 +41,12 @@ log_format  ltsv  "time:$time_local"
                   "\tvhost:$host";
 
 access_log  /var/log/nginx/access.log  ltsv; 
+```
+
+Reload Nginx.
+```
+/etc/init.d/nginx configtest
+/etc/init.d/nginx reload
 ```
 
 
