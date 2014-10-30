@@ -115,16 +115,16 @@ my @request_time_array = ();
 my $log_handle = File::ReadBackwards->new($LOG) or die "$!";
 
 for (my $i = 0; $i < $line_counter; $i++) {
-  my $log_line = $log_handle->readline;
-  if (defined($log_line)) {
-    my $p = Text::LTSV->new;
-    my $hash = $p->parse_line($log_line);
-    my $time_s = $hash->{reqtime};
-    if (!defined($time_s)) { next; }
-    push @request_time_array, $time_s * 1000;
-  } else {
-    last;
-  }
+    my $log_line = $log_handle->readline;
+    if (defined($log_line)) {
+        my $p = Text::LTSV->new;
+        my $hash = $p->parse_line($log_line);
+        my $time_s = $hash->{reqtime};
+        if (!defined($time_s)) { next; }
+        push @request_time_array, $time_s * 1000;
+    } else {
+        last;
+    }
 }
 $log_handle->close;
 
