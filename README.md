@@ -20,6 +20,29 @@ Modes
 Usage
 ----------------
 
+Nginx must be configured to get $request_time.  
+nginx_request_time expects LTSV log format.  
+
+```
+/etc/nginx/nginx.conf
+
+log_format  ltsv  "time:$time_local"
+                  "\thost:$remote_addr"
+                  "\tforwardedfor:$http_x_forwarded_for"
+                  "\treq:$request"
+                  "\tstatus:$status"
+                  "\tsize:$body_bytes_sent"
+                  "\treferer:$http_referer"
+                  "\tua:$http_user_agent"
+                  "\treqtime:$request_time"
+                  "\tcache:$upstream_http_x_cache"
+                  "\truntime:$upstream_http_x_runtime"
+                  "\tvhost:$host";
+
+access_log  /var/log/nginx/access.log  ltsv; 
+```
+
+
 munin-nginx_request_time plugin needs Statistics modules.
 
 ```
