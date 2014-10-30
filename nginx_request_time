@@ -19,7 +19,7 @@ You can override the log file location.
       env.loglimit 1000
 
 Nginx must be configured to get $request_time.
-nginx_request_time expects TSV log format.
+nginx_request_time expects LTSV log format.
 
 Example format:
 log_format  ltsv  "time:$time_local"
