@@ -10,7 +10,7 @@ nginx request_time statistics
 
 =head1 CONFIGURATION
 
-File::ReadBackwards, Statistics::Lite, and Statistics::Descriptive are used and must be installed.
+File::ReadBackwards, Statistics::Lite, Statistics::Descriptive and Text::LTSV are used and must be installed.
 
 You can override the log file location.
 
@@ -22,13 +22,18 @@ Nginx must be configured to get $request_time.
 nginx_request_time expects TSV log format.
 
 Example format:
-log_format request_time_stats   '$time_local\t'
-                                '$status\t'
-                                '$request_time\t'
-                                '$remote_addr\t'
-                                '$upstream_addr\t'
-                                '$upstream_response_time\t'
-                                '$request';
+log_format  ltsv  "time:$time_local"
+                  "\thost:$remote_addr"
+                  "\tforwardedfor:$http_x_forwarded_for"
+                  "\treq:$request"
+                  "\tstatus:$status"
+                  "\tsize:$body_bytes_sent"
+                  "\treferer:$http_referer"
+                  "\tua:$http_user_agent"
+                  "\treqtime:$request_time"
+                  "\tcache:$upstream_http_x_cache"
+                  "\truntime:$upstream_http_x_runtime"
+                  "\tvhost:$host";
 
 By default the last 1000 log lines are read, you may want to change this.
 
@@ -37,15 +42,26 @@ By default the last 1000 log lines are read, you may want to change this.
   #%# family=auto
   #%# capabilities=autoconf
 
+=head1 AUTHOR
+
+t-cyrill
+https://github.com/t-cyrill/munin-nginx_request_time
+
+takeshiyako2
+https://github.com/takeshiyako2/munin-nginx_request_time
+
 =head1 LICENSE
 
 MIT
 
 =cut
 
+use strict;
+use warnings;
 use File::ReadBackwards;
 use Statistics::Lite qw(max min mean median);
 use Statistics::Descriptive;
+use Text::LTSV;
 
 my $line_counter = exists $ENV{'loglimit'} ? $ENV{'loglimit'} : 1000;
 my $LOG = exists $ENV{'logfile'} ? $ENV{'logfile'}
@@ -96,11 +112,14 @@ EOS
 }
 
 my @request_time_array = ();
-my $log_handle = File::ReadBackwards->new($LOG);
+my $log_handle = File::ReadBackwards->new($LOG) or die "$!";
+
 for (my $i = 0; $i < $line_counter; $i++) {
-  my $log_line = $bw->readline;
+  my $log_line = $log_handle->readline;
   if (defined($log_line)) {
-    my $time_s = (split "\t", $log_line)[2];
+    my $p = Text::LTSV->new;
+    my $hash = $p->parse_line($log_line);
+    my $time_s = $hash->{reqtime};
     if (!defined($time_s)) { next; }
     push @request_time_array, $time_s * 1000;
   } else {
@@ -109,10 +128,10 @@ for (my $i = 0; $i < $line_counter; $i++) {
 }
 $log_handle->close;
 
-$stat = Statistics::Descriptive::Full->new();
+my $stat = Statistics::Descriptive::Full->new();
 $stat->add_data(@request_time_array);
-$percentile90 = $stat->percentile(90);
-$percentile95 = $stat->percentile(95);
+my $percentile90 = $stat->percentile(90);
+my $percentile95 = $stat->percentile(95);
 
 my $min = min @request_time_array;
 my $max = max @request_time_array;

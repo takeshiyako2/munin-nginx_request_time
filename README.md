@@ -23,6 +23,8 @@ Usage
 munin-nginx_request_time plugin needs Statistics modules.
 
 ```
+sudo cpanm install Text::LTSV
+sudo cpanm install File::ReadBackwards
 sudo cpanm install Statistics::Lite
 sudo cpanm install Statistics::Descriptive
 ```
@@ -30,8 +32,8 @@ sudo cpanm install Statistics::Descriptive
 And then,
 
 ```
-ln -s nginx_request_time /etc/munin/plugins/nginx_request_time
-ln -s nginx_request_time /etc/munin/plugins/nginx_request_time_max
+ln -s /usr/share/munin/plugins/nginx_request_time /etc/munin/plugins/nginx_request_time
+ln -s /usr/share/munin/plugins/nginx_request_time /etc/munin/plugins/nginx_request_time_max
 ```
 
 Configration
