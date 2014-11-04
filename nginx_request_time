@@ -31,8 +31,7 @@ log_format  ltsv  "time:$time_local"
                   "\treferer:$http_referer"
                   "\tua:$http_user_agent"
                   "\treqtime:$request_time"
-                  "\tcache:$upstream_http_x_cache"
-                  "\truntime:$upstream_http_x_runtime"
+                  "\tapptime:$upstream_response_time"
                   "\tvhost:$host";
 
 By default the last 1000 log lines are read, you may want to change this.
